@@ -14,11 +14,11 @@ class Student(models.Model):
         return f"{self.first_name} {self.last_name}"
 
     def get_grade(self):
-        if self.grade < 40:
+        if self.average_score < 40:
             return 'Fail'
-        elif self.grade < 70 > 40:
+        elif self.average_score < 70 > 40:
             return 'Pass'
-        elif self.grade < 100 > 70:
+        elif self.average_score < 100 > 70:
             return 'Excellent'
         else:
             return 'Error'
