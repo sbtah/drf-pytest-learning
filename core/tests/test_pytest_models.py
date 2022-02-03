@@ -1,7 +1,25 @@
-from classroom.models import Classroom, Student
+from django.core.exceptions import ValidationError
+from classroom.models import Classroom, Student, average_grade_validator, name_validator
 from mixer.backend.django import mixer
 import pytest
 pytestmark = pytest.mark.django_db
+
+
+def test_average_grade_validator():
+    """Test that average grade that is lower then 0 raises an error."""
+
+    with pytest.raises(ValidationError) as error:
+        average_grade_validator(-2.0)
+
+
+def test_name_validator():
+    """Test that bad characters used for first_name or last_namer raises errors."""
+
+    with pytest.raises(ValidationError) as error:
+        name_validator('a')
+
+    with pytest.raises(ValidationError) as error:
+        name_validator('12312')
 
 
 class TestStudentModel():
@@ -20,7 +38,7 @@ class TestStudentModel():
         student1 = mixer.blend(Student, first_name='test', last_name='test')
         assert str(student1) == 'test test'
 
-    @pytest.mark.parametrize('failed', [num for num in range(1, 40)])
+    @pytest.mark.parametrize('failed', [float(num) for num in range(0, 40)])
     def test_grade_fail(self, failed):
         """Test get_grade returns proper data
         (average_score < 40) -> 'Fail'
@@ -29,7 +47,7 @@ class TestStudentModel():
         student1 = mixer.blend(Student, average_score=failed)
         assert student1.get_grade() == 'Fail'
 
-    @pytest.mark.parametrize('passed', [num for num in range(40, 70)])
+    @pytest.mark.parametrize('passed', [float(num) for num in range(40, 70)])
     def test_grade_pass(self, passed):
         """Test get_grade returns proper data
         (average_score < 70 and average_score > 40) -> 'Pass'
@@ -38,7 +56,7 @@ class TestStudentModel():
         student1 = mixer.blend(Student, average_score=passed)
         assert student1.get_grade() == 'Pass'
 
-    @pytest.mark.parametrize('excellent', [num for num in range(70, 100)])
+    @pytest.mark.parametrize('excellent', [float(num) for num in range(70, 100)])
     def test_grade_excellent(self, excellent):
         """Test get_grade returns proper data
         (average_score < 100 and average_score > 70) -> 'Excellent'
