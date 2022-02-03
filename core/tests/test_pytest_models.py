@@ -20,28 +20,31 @@ class TestStudentModel():
         student1 = mixer.blend(Student, first_name='test', last_name='test')
         assert str(student1) == 'test test'
 
-    def test_grade_fail(self):
+    @pytest.mark.parametrize('failed', [num for num in range(1, 40)])
+    def test_grade_fail(self, failed):
         """Test get_grade returns proper data
         (average_score < 40) -> 'Fail'
         """
 
-        student1 = mixer.blend(Student, average_score=33)
+        student1 = mixer.blend(Student, average_score=failed)
         assert student1.get_grade() == 'Fail'
 
-    def test_grade_pass(self):
+    @pytest.mark.parametrize('passed', [num for num in range(40, 70)])
+    def test_grade_pass(self, passed):
         """Test get_grade returns proper data
         (average_score < 70 and average_score > 40) -> 'Pass'
         """
 
-        student1 = mixer.blend(Student, average_score=66)
+        student1 = mixer.blend(Student, average_score=passed)
         assert student1.get_grade() == 'Pass'
 
-    def test_grade_excellent(self):
+    @pytest.mark.parametrize('excellent', [num for num in range(70, 100)])
+    def test_grade_excellent(self, excellent):
         """Test get_grade returns proper data
         (average_score < 100 and average_score > 70) -> 'Excellent'
         """
 
-        student1 = mixer.blend(Student, average_score=86)
+        student1 = mixer.blend(Student, average_score=excellent)
         assert student1.get_grade() == 'Excellent'
 
     def test_grade_error(self):
