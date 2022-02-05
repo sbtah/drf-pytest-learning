@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 def average_grade_validator(val):
     """Custom validator for average score."""
+
     if val < 0:
         raise ValidationError(
             _(f'{val} is less then 0'),
