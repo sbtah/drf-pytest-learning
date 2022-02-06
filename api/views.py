@@ -33,6 +33,7 @@ class StudentDeleteApiView(generics.DestroyAPIView):
     serializer_class = StudentSerializer
 
 
+# Classroom Views - made with APIView just for practice.
 class ClassroomListApiView(APIView):
     """ListApiView for Classrooms of specified capacity for Students."""
 

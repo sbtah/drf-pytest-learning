@@ -1,13 +1,16 @@
+from email.policy import HTTP
 from django.urls import reverse
 from rest_framework import status
 from mixer.backend.django import mixer
-from classroom.models import Student
+from classroom.models import Student, Classroom
 from api.serializers import StudentSerializer
 
 
 # Endpoints
 LIST_STUDENT_URL = reverse('api:student-list')
 CREATE_STUDENT_URL = reverse('api:student-create')
+
+LIST_CLASSROOM_URL = reverse('api:classroom-list')
 
 
 class TestStudentApiViews():
@@ -47,7 +50,7 @@ class TestStudentApiViews():
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_student_create_api_creates_data(self, client_drf, student_data, db):
-        """Test that Student object is created with default is_qualified at related endpoint."""
+        """Test that Student object is created with False default Student.is_qualified."""
         # data is provided by the fixture in conftest.
         response = client_drf.post(
             CREATE_STUDENT_URL, data=student_data, follow=True)
@@ -107,3 +110,14 @@ class TestStudentApiViews():
             reverse('api:student-delete', kwargs={'pk': 3}))
         assert response.json().get('detail') == 'Not found.'
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+class TestClassroomApiViews():
+    """Test cases for Classroom API Views."""
+
+    def test_classroom_list_api_view_url(self, client_drf, db):
+        """Test reponse from url of ClassroomListApiView."""
+
+        response = client_drf.get(LIST_CLASSROOM_URL)
+        assert Classroom.objects.all().count() == 0
+        assert response.status_code == status.HTTP_200_OK
