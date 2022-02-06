@@ -47,14 +47,9 @@ class TestStudentApiViews():
         response = client_drf.post(CREATE_STUDENT_URL)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    def test_student_create_api_creates_data(self, client_drf, db):
+    def test_student_create_api_creates_data(self, client_drf, student_data, db):
         """Test that Student object is created at related endpoint."""
-
-        payload = {
-            'first_name': 'Tester',
-            'last_name': 'Testy',
-            'user_number': 1111,
-        }
+        # data is provided by the fixture in conftest.
         response = client_drf.post(
-            CREATE_STUDENT_URL, data=payload, follow=True)
+            CREATE_STUDENT_URL, data=student_data, follow=True)
         assert response.status_code == status.HTTP_201_CREATED

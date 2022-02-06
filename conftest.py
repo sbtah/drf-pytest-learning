@@ -8,3 +8,12 @@ def client_drf():
     from rest_framework.test import APIClient
 
     return APIClient()
+
+
+@pytest.fixture
+def student_data():
+    return {
+        'first_name': 'test',
+        'last_name': 'tester',
+        'user_number': '10565',
+    }
