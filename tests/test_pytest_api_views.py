@@ -1,3 +1,5 @@
+from email.policy import HTTP
+import json
 import pytest
 from django.urls import reverse
 from rest_framework import status
@@ -6,8 +8,9 @@ from classroom.models import Student
 from api.serializers import StudentSerializer
 
 
-# Endpoints tested.
-LIST_STUDENT_URL = reverse('api:list-students')
+# Endpoints
+LIST_STUDENT_URL = reverse('api:student-list')
+CREATE_STUDENT_URL = reverse('api:student-create')
 
 
 class TestStudentApiViews():
@@ -31,10 +34,27 @@ class TestStudentApiViews():
     def test_student_list_api_view_serialize_data(self, client_drf, db):
         """Test that data returned from url is properly serialized."""
 
-        student = mixer.blend(Student, first_name='Tester 2')
+        student = mixer.blend(Student, first_name='Tester')
         students = Student.objects.all()
         response = client_drf.get(LIST_STUDENT_URL)
         serializer = StudentSerializer(students, many=True)
         assert response.data == serializer.data
 
-    # StudentDetailAPiView Tests.
+    # StudentCreateAPiView Tests.
+    def test_student_create_api_view_url(self, client_drf, db):
+        """Test url response of StudentCreateApiView in no data given."""
+
+        response = client_drf.post(CREATE_STUDENT_URL)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_student_create_api_creates_data(self, client_drf, db):
+        """Test that Student object is created at related endpoint."""
+
+        payload = {
+            'first_name': 'Tester',
+            'last_name': 'Testy',
+            'user_number': 1111,
+        }
+        response = client_drf.post(
+            CREATE_STUDENT_URL, data=payload, follow=True)
+        assert response.status_code == status.HTTP_201_CREATED

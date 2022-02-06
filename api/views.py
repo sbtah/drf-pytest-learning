@@ -8,3 +8,24 @@ class StudentListApiView(generics.ListAPIView):
 
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+
+
+class StudentDetailsApiView(generics.RetrieveAPIView):
+    """DetailsApiView for Student object."""
+
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+
+
+class StudentCreateApiView(generics.CreateAPIView):
+    """CreateApiView for Student object."""
+
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+
+
+class StudentDeleteApiView(generics.DestroyAPIView):
+    """DeleteApiView for Student object."""
+
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
