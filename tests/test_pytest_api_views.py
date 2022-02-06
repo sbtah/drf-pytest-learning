@@ -1,6 +1,3 @@
-from email.policy import HTTP
-import json
-import pytest
 from django.urls import reverse
 from rest_framework import status
 from mixer.backend.django import mixer
@@ -48,8 +45,22 @@ class TestStudentApiViews():
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_student_create_api_creates_data(self, client_drf, student_data, db):
-        """Test that Student object is created at related endpoint."""
+        """Test that Student object is created with default is_qualified at related endpoint."""
         # data is provided by the fixture in conftest.
         response = client_drf.post(
             CREATE_STUDENT_URL, data=student_data, follow=True)
+        user = Student.objects.get(id=1)
         assert response.status_code == status.HTTP_201_CREATED
+        assert user.is_qualified == False
+
+    def test_student_create_api_with_bad_data(self, client_drf, db):
+        """Test that Student object is not created while data is wrong."""
+
+        data = {
+            'first_name': '',
+            'last_name': 'tester',
+            'user_number': '10565',
+        }
+        response = client_drf.post(
+            CREATE_STUDENT_URL, data=data, follow=True)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
