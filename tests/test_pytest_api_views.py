@@ -83,8 +83,24 @@ class TestStudentApiViews():
         assert response.data['first_name'] == 'Student'
 
     def test_student_details_response_if_no_data(self, client_drf, db):
-        """Test that StudentDetailsView returns status 404 if user does not exists."""
+        """Test that StudentDetailsView returns status 404 if Student does not exists."""
 
         response = client_drf.get(
             reverse('api:student-details', kwargs={'pk': 3}))
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    # StudentDeletesAPiView Tests.
+    def test_student_delete_view(self, client_drf, db):
+        """Test that data is deleted with StudentDeleteApiView."""
+
+        student = mixer.blend(Student)
+        response = client_drf.delete(
+            reverse('api:student-delete', kwargs={'pk': student.id}))
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    def test_student_delete_view_if_no_data(self, client_drf, db):
+        """Test that StudentDeleteView returns status 404 if Student does not exists."""
+
+        response = client_drf.delete(
+            reverse('api:student-delete', kwargs={'pk': 3}))
         assert response.status_code == status.HTTP_404_NOT_FOUND
