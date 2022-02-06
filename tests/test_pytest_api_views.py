@@ -64,3 +64,27 @@ class TestStudentApiViews():
         response = client_drf.post(
             CREATE_STUDENT_URL, data=data, follow=True)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    # StudentDetailsAPiView Tests.
+    def test_student_details_view_url(self, client_drf, db):
+        """Test url response of StudentDetailsApiView."""
+
+        student = mixer.blend(Student)
+        response = client_drf.get(
+            reverse('api:student-details', kwargs={'pk': student.id}))
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_student_details_view_gets_data(self, client_drf, db):
+        """Test that StudentDetailsView returns proper data."""
+
+        student = mixer.blend(Student, first_name='Student')
+        response = client_drf.get(
+            reverse('api:student-details', kwargs={'pk': student.id}))
+        assert response.data['first_name'] == 'Student'
+
+    def test_student_details_response_if_no_data(self, client_drf, db):
+        """Test that StudentDetailsView returns status 404 if user does not exists."""
+
+        response = client_drf.get(
+            reverse('api:student-details', kwargs={'pk': 3}))
+        assert response.status_code == status.HTTP_404_NOT_FOUND
