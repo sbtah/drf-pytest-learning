@@ -14,3 +14,15 @@ class StudentSerializer(serializers.ModelSerializer):
                   'is_qualified',
                   'average_score'
                   )
+
+
+class ClassroomSerializer(serializers.ModelSerializer):
+    """Serializer for Classroom object."""
+
+    class Meta:
+        model = Classroom
+        fields = (
+            'name',
+            'student_capacity',
+            'students',
+        )

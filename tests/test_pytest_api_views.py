@@ -18,6 +18,7 @@ class TestStudentApiViews():
         """Test that StudentListApiView url is responding."""
 
         response = client_drf.get(LIST_STUDENT_URL)
+        assert Student.objects.all().count() == 0
         assert response.status_code == status.HTTP_200_OK
 
     def test_student_list_api_view_lists_data(self, client_drf, db):
@@ -27,6 +28,7 @@ class TestStudentApiViews():
         response = client_drf.get(LIST_STUDENT_URL)
         assert response.data[0]['first_name'] == 'Tester'
         assert len(response.data) == 1
+        assert Student.objects.all().count() == 1
 
     def test_student_list_api_view_serialize_data(self, client_drf, db):
         """Test that data returned from url is properly serialized."""
@@ -103,4 +105,5 @@ class TestStudentApiViews():
 
         response = client_drf.delete(
             reverse('api:student-delete', kwargs={'pk': 3}))
+        assert response.json().get('detail') == 'Not found.'
         assert response.status_code == status.HTTP_404_NOT_FOUND

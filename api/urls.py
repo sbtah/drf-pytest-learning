@@ -14,4 +14,6 @@ urlpatterns = [
          name='student-details'),
     path('student-delete/<int:pk>/', views.StudentDeleteApiView.as_view(),
          name='student-delete'),
+    path('classroom-list/', views.ClassroomListApiView.as_view(),
+         name='classroom-list'),
 ]
