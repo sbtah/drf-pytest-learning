@@ -112,7 +112,7 @@ class TestStudentApiViews():
 
         response = client_drf.delete(
             reverse('api:student-delete', kwargs={'pk': 3}))
-        assert response.json().get('detail') == 'Not found.'
+        assert response.data['detail'] == 'Not found.'
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
@@ -145,6 +145,30 @@ class TestClassroomApiViews():
         """Test reponse from url of ClassroomStudentCapacityApiView."""
 
         response = client_drf.get(
-            reverse('api:classroom-student-capacity', kwargs={'student_capacity': 100}))
+            reverse('api:classroom-student-capacity',
+                    kwargs={'student_capacity': 100}))
         assert Classroom.objects.all().count() == 0
         assert response.status_code == status.HTTP_200_OK
+
+    def test_classroom_student_capacity_list_proper_data(self, client_drf, db):
+        """Test that ClassroomStudentCapacityApiView is listing proper data."""
+
+        classroom_0 = mixer.blend(
+            Classroom, name='Chemistry', student_capacity=50)
+        classroom_1 = mixer.blend(
+            Classroom, name='Physics', student_capacity=100)
+        classroom_2 = mixer.blend(
+            Classroom, name='History', student_capacity=200)
+        assert Classroom.objects.all().count() == 3
+        response = client_drf.get(
+            reverse('api:classroom-student-capacity',
+                    kwargs={'student_capacity': 100}))
+        assert response.status_code == status.HTTP_200_OK
+        print(response.data)
+        assert response.data[0]['name'] == 'Physics'
+        assert response.data[1]['name'] == 'History'
+        assert len(response.data) == 2
+
+    def test_clasroom_student_capacity_view_serialize_data(self, client_drf, db):
+        """Test that data listed by ClassroomStudentCapacityApiView is properly serialized."""
+        pass
