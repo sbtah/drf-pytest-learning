@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from mixer.backend.django import mixer
 from classroom.models import Student, Classroom
-from api.serializers import StudentSerializer
+from api.serializers import StudentSerializer, ClassroomSerializer
 
 
 # Endpoints
@@ -138,7 +138,12 @@ class TestClassroomApiViews():
 
     def test_clasroom_api_view_serialize_data(self, client_drf, db):
         """Test that data listed by ClassroomListApiView is properly serialized."""
-        pass
+
+        classroom = mixer.blend(Classroom)
+        classrooms = Classroom.objects.all()
+        response = client_drf.get(LIST_CLASSROOM_URL)
+        serializer = ClassroomSerializer(classrooms, many=True)
+        assert response.data == serializer.data
 
     # ClassroomStudentCapacityApiView
     def test_classroom_student_capacity_url(self, client_drf, db):
@@ -164,11 +169,16 @@ class TestClassroomApiViews():
             reverse('api:classroom-student-capacity',
                     kwargs={'student_capacity': 100}))
         assert response.status_code == status.HTTP_200_OK
-        print(response.data)
         assert response.data[0]['name'] == 'Physics'
         assert response.data[1]['name'] == 'History'
         assert len(response.data) == 2
 
     def test_clasroom_student_capacity_view_serialize_data(self, client_drf, db):
         """Test that data listed by ClassroomStudentCapacityApiView is properly serialized."""
-        pass
+
+        classroom = mixer.blend(Classroom, student_capacity=101)
+        classrooms = Classroom.objects.all()
+        response = client_drf.get(reverse('api:classroom-student-capacity',
+                                          kwargs={'student_capacity': 100}))
+        serializer = ClassroomSerializer(classrooms, many=True)
+        assert response.data == serializer.data
