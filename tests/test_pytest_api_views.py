@@ -51,7 +51,7 @@ class TestStudentApiViews():
 
     def test_student_create_api_creates_data(self, client_drf, student_data, db):
         """Test that Student object is created and is_qualified is set to False."""
-        # data is provided by the fixture in conftest.
+        # data is provided by the fixture student_data in conftest.
         response = client_drf.post(
             CREATE_STUDENT_URL, data=student_data, follow=True)
         user = Student.objects.get(id=1)
@@ -93,6 +93,7 @@ class TestStudentApiViews():
 
         response = client_drf.get(
             reverse('api:student-details', kwargs={'pk': 3}))
+        assert response.data['detail'] == 'Not found.'
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # StudentDeletesAPiView Tests.
@@ -100,8 +101,10 @@ class TestStudentApiViews():
         """Test that data is deleted with StudentDeleteApiView."""
 
         student = mixer.blend(Student)
+        assert Student.objects.all().count() == 1
         response = client_drf.delete(
             reverse('api:student-delete', kwargs={'pk': student.id}))
+        assert Student.objects.all().count() == 0
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_student_delete_view_if_no_data(self, client_drf, db):
@@ -116,9 +119,32 @@ class TestStudentApiViews():
 class TestClassroomApiViews():
     """Test cases for Classroom API Views."""
 
+    # ClassroomListApiView.
     def test_classroom_list_api_view_url(self, client_drf, db):
         """Test reponse from url of ClassroomListApiView."""
 
         response = client_drf.get(LIST_CLASSROOM_URL)
+        assert Classroom.objects.all().count() == 0
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_classroom_api_view_lists_data(self, client_drf, db):
+        """Test that ClassroomListApiView properly list data."""
+
+        classroom = mixer.blend(Classroom, name='Physics')
+        response = client_drf.get(LIST_CLASSROOM_URL)
+        assert Classroom.objects.all().count() == 1
+        assert response.data[0]['name'] == 'Physics'
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_clasroom_api_view_serialize_data(self, client_drf, db):
+        """Test that data listed by ClassroomListApiView is properly serialized."""
+        pass
+
+    # ClassroomStudentCapacityApiView
+    def test_classroom_student_capacity_url(self, client_drf, db):
+        """Test reponse from url of ClassroomStudentCapacityApiView."""
+
+        response = client_drf.get(
+            reverse('api:classroom-student-capacity', kwargs={'student_capacity': 100}))
         assert Classroom.objects.all().count() == 0
         assert response.status_code == status.HTTP_200_OK

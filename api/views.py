@@ -1,5 +1,4 @@
-from rest_framework import generics
-from rest_framework import status
+from rest_framework import generics, status
 from rest_framework.views import APIView, Response
 from classroom.models import Student, Classroom
 from api.serializers import StudentSerializer, ClassroomSerializer
@@ -43,5 +42,19 @@ class ClassroomListApiView(APIView):
     def get(self, request, *args, **kwargs):
         """GET method."""
         items = Classroom.objects.all()
+        serializer = ClassroomSerializer(items, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ClassroomStudentCapacityApiView(APIView):
+    """Return classrooms with student capacity greater or equal to link param."""
+
+    queryset = Classroom.objects.all()
+    serializer_class = ClassroomSerializer
+
+    def get(self, request, *args, **kwargs):
+        """Custom GET method."""
+        url_number = self.kwargs.get('student_capacity')
+        items = Classroom.objects.filter(student_capacity__gte=url_number)
         serializer = ClassroomSerializer(items, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

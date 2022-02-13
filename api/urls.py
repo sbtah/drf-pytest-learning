@@ -16,4 +16,7 @@ urlpatterns = [
          name='student-delete'),
     path('classroom-list/', views.ClassroomListApiView.as_view(),
          name='classroom-list'),
+    path('classroom-student-capacity/<int:student_capacity>/',
+         views.ClassroomStudentCapacityApiView.as_view(),
+         name='classroom-student-capacity'),
 ]
