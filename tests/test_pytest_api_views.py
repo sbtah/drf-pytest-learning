@@ -1,4 +1,3 @@
-from email.policy import HTTP
 from django.urls import reverse
 from rest_framework import status
 from mixer.backend.django import mixer
@@ -9,7 +8,6 @@ from api.serializers import StudentSerializer
 # Endpoints
 LIST_STUDENT_URL = reverse('api:student-list')
 CREATE_STUDENT_URL = reverse('api:student-create')
-
 LIST_CLASSROOM_URL = reverse('api:classroom-list')
 
 
