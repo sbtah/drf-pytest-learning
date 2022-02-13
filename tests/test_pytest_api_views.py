@@ -19,6 +19,7 @@ class TestStudentApiViews():
         """Test that StudentListApiView url is responding."""
 
         response = client_drf.get(LIST_STUDENT_URL)
+        assert response.data == []
         assert Student.objects.all().count() == 0
         assert response.status_code == status.HTTP_200_OK
 
@@ -27,6 +28,7 @@ class TestStudentApiViews():
 
         student = mixer.blend(Student, first_name='Tester')
         response = client_drf.get(LIST_STUDENT_URL)
+
         assert response.data[0]['first_name'] == 'Tester'
         assert len(response.data) == 1
         assert Student.objects.all().count() == 1
@@ -48,7 +50,7 @@ class TestStudentApiViews():
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_student_create_api_creates_data(self, client_drf, student_data, db):
-        """Test that Student object is created with False default Student.is_qualified."""
+        """Test that Student object is created and is_qualified is set to False."""
         # data is provided by the fixture in conftest.
         response = client_drf.post(
             CREATE_STUDENT_URL, data=student_data, follow=True)
@@ -66,6 +68,7 @@ class TestStudentApiViews():
         }
         response = client_drf.post(
             CREATE_STUDENT_URL, data=data, follow=True)
+        assert response.data['first_name'] != ''
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # StudentDetailsAPiView Tests.
